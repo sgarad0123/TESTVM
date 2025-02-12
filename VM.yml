@@ -1,0 +1,23 @@
+trigger:
+- main  # Adjust based on your branch
+
+pool:
+  name: ADO
+  vmImage: 'windows-latest'
+  demands: 
+    - Agent.Name -equals ADO2 # Change to your agent pool
+
+stages:
+- stage: DeployIIS
+  displayName: "Deploy IIS App Pool"
+  jobs:
+  - job: CreateAppPool
+    displayName: "Create IIS App Pool on Remote Windows VM"
+    steps:
+    - task: PowerShell@2
+      displayName: "Run Remote IIS Setup"
+      inputs:
+        targetType: "filePath"
+        filePath: "$(Build.SourcesDirectory)/CreateAppPool_Remote.ps1"
+        arguments: "-TargetVM 'DESKTOP-8R1FAH3' -Username 'shubham' -Password '9403' -AppPoolName 'MyAppPool' -ServiceAccount 'DOMAIN\User' -ServicePassword 'P@ssword123' -DotNetVersion 'v4.0'"
+        failOnStderr: true
